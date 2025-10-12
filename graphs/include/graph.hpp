@@ -5,6 +5,7 @@
 #include <map>
 #include <optional>
 #include <queue>
+#include <stack>
 #include <stdexcept>
 #include <vector>
 
@@ -22,6 +23,9 @@ public:
   virtual std::size_t getVertexCount() const = 0;
   virtual std::size_t getEdgeCount() const = 0;
   virtual void bfs(VertexID root_id,
+                   std::function<void(std::optional<VertexID>)> callback =
+                       nullptr) const = 0;
+  virtual void dfs(VertexID root_id,
                    std::function<void(std::optional<VertexID>)> callback =
                        nullptr) const = 0;
 
@@ -101,6 +105,7 @@ private:
 
 public:
   virtual std::vector<AdjListElement> getNeighbors(VertexID id) const = 0;
+
   void
   bfs(VertexID root_id,
       std::function<void(std::optional<VertexID>)> callback = nullptr) const {
@@ -130,6 +135,45 @@ public:
         }
       }
       visiting_state[current_vertex_id] = VisitingState::Processed;
+    }
+  }
+
+  void
+  dfs(VertexID root_id,
+      std::function<void(std::optional<VertexID>)> callback = nullptr) const {
+    std::map<VertexID, VisitingState> visiting_state{};
+    for (const auto &[vertex_id, _] : adj_list_) {
+      visiting_state[vertex_id] = VisitingState::Undiscovered;
+    }
+
+    std::stack<VertexID> visiting_stack;
+    visiting_state[root_id] = VisitingState::Discovered;
+    visiting_stack.push(root_id);
+
+    while (!visiting_stack.empty()) {
+      VertexID current_vertex_id = visiting_stack.top();
+      visiting_stack.pop();
+
+      // Skip if already processed
+      if (visiting_state[current_vertex_id] == VisitingState::Processed) {
+        continue;
+      }
+
+      if (callback) {
+        callback(std::optional<VertexID>(current_vertex_id));
+      }
+
+      visiting_state[current_vertex_id] = VisitingState::Processed;
+
+      // Push neighbors in reverse order to maintain left-to-right traversal
+      for (const AdjListElement &list_element :
+           adj_list_.at(current_vertex_id)) {
+        VertexID neighbor_id = extractVertexID(list_element);
+        if (visiting_state[neighbor_id] == VisitingState::Undiscovered) {
+          visiting_state[neighbor_id] = VisitingState::Discovered;
+          visiting_stack.push(neighbor_id);
+        }
+      }
     }
   }
 };

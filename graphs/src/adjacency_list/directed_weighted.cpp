@@ -106,4 +106,10 @@ public:
                nullptr) const override {
     AdjList<std::pair<VertexID, WeightT>>::bfs(root_id, callback);
   }
+
+  void dfs(VertexID root_id,
+           std::function<void(std::optional<VertexID>)> callback =
+               nullptr) const override {
+    AdjList<std::pair<VertexID, WeightT>>::dfs(root_id, callback);
+  }
 };
