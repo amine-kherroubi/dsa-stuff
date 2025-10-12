@@ -2,6 +2,7 @@
 
 #include "types.hpp"
 #include <map>
+#include <queue>
 #include <stdexcept>
 #include <vector>
 
@@ -85,4 +86,34 @@ public:
   virtual ~UndirectedUnweightedGraph() = default;
 
   virtual void addEdge(VertexID from, VertexID to) = 0;
+};
+
+template <typename AdjListElement> class AdjList {
+protected:
+  std::map<VertexID, std::vector<AdjListElement>> adj_list_;
+
+public:
+  void bfs(VertexID root_id) const {
+    std::map<VertexID, VisitingState> visiting_state{};
+    for (const auto [vertex_id, _] : adj_list_) {
+      visiting_state[vertex_id] = VisitingState::Undiscoverd;
+    }
+
+    std::queue<VertexID> visiting_queue;
+    visiting_state[root_id] = VisitingState::Discovered;
+    visiting_queue.push(root_id);
+
+    while (!visiting_queue.empty()) {
+      VertexID current_vertex_id = visiting_queue.front();
+      visiting_queue.pop();
+
+      for (const VertexID neighbor_id : adj_list_[current_vertex_id]) {
+        if (visiting_state[neighbor_id] == VisitingState::Undiscoverd) {
+          visiting_state[neighbor_id] = VisitingState::Discovered;
+          visiting_queue.push(neighbor_id);
+        }
+      }
+      visiting_state[current_vertex_id] = VisitingState::Processed;
+    }
+  }
 };

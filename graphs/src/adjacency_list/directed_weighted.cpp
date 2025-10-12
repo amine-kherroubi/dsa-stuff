@@ -3,17 +3,15 @@
 
 template <typename VertexT, typename WeightT>
 class AdjListDirectedWeightedGraph
-    : public DirectedWeightedGraph<VertexT, WeightT> {
-private:
-  std::map<VertexID, std::vector<std::pair<VertexID, WeightT>>> adj_list;
-
+    : public DirectedWeightedGraph<VertexT, WeightT>,
+      public AdjList<std::pair<VertexID, WeightT>> {
 public:
   AdjListDirectedWeightedGraph() = default;
   ~AdjListDirectedWeightedGraph() override = default;
 
   void addVertex(VertexID id, const VertexT &value = VertexT{}) override {
-    if (adj_list.find(id) == adj_list.end()) {
-      adj_list[id] = {};
+    if (adj_list_.find(id) == adj_list_.end()) {
+      adj_list_[id] = {};
       this->vertices[id] = value;
     }
   }
@@ -27,18 +25,18 @@ public:
     }
 
     if (!hasEdge(from, to)) {
-      adj_list[from].push_back({to, weight});
+      adj_list_[from].push_back({to, weight});
     }
   }
 
   void removeVertex(VertexID id) override {
-    auto it = adj_list.find(id);
-    if (it != adj_list.end()) {
-      adj_list.erase(it);
+    auto it = adj_list_.find(id);
+    if (it != adj_list_.end()) {
+      adj_list_.erase(it);
     }
     this->vertices.erase(id);
 
-    for (auto &[_, neighbors] : adj_list) {
+    for (auto &[_, neighbors] : adj_list_) {
       neighbors.erase(std::remove_if(neighbors.begin(), neighbors.end(),
                                      [id](const auto &pair) {
                                        return pair.first == id;
@@ -48,8 +46,8 @@ public:
   }
 
   void removeEdge(VertexID from, VertexID to) override {
-    auto it = adj_list.find(from);
-    if (it == adj_list.end())
+    auto it = adj_list_.find(from);
+    if (it == adj_list_.end())
       return;
 
     auto &neighbors = it->second;
@@ -60,8 +58,8 @@ public:
   }
 
   bool hasEdge(VertexID from, VertexID to) const override {
-    auto it = adj_list.find(from);
-    if (it == adj_list.end())
+    auto it = adj_list_.find(from);
+    if (it == adj_list_.end())
       return false;
 
     const auto &neighbors = it->second;
@@ -71,8 +69,8 @@ public:
   }
 
   WeightT getEdgeWeight(VertexID from, VertexID to) const override {
-    auto it = adj_list.find(from);
-    if (it == adj_list.end())
+    auto it = adj_list_.find(from);
+    if (it == adj_list_.end())
       throw std::invalid_argument("Source vertex not found");
 
     const auto &neighbors = it->second;
@@ -86,19 +84,19 @@ public:
     return edge->second;
   }
 
-  std::size_t getVertexCount() const override { return adj_list.size(); }
+  std::size_t getVertexCount() const override { return adj_list_.size(); }
 
   std::size_t getEdgeCount() const override {
     std::size_t count = 0;
-    for (const auto &[_, neighbors] : adj_list) {
+    for (const auto &[_, neighbors] : adj_list_) {
       count += neighbors.size();
     }
     return count;
   }
 
   std::vector<std::pair<VertexID, WeightT>> getNeighbors(VertexID id) const {
-    auto it = adj_list.find(id);
-    if (it == adj_list.end())
+    auto it = adj_list_.find(id);
+    if (it == adj_list_.end())
       return {};
     return it->second;
   }
