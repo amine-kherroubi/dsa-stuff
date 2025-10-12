@@ -1,6 +1,5 @@
 #include "../../include/graph.hpp"
 #include <algorithm>
-#include <utility>
 
 template <typename VertexT, typename WeightT>
 class AdjListDirectedWeightedGraph
