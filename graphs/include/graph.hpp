@@ -7,7 +7,7 @@
 
 template <typename VertexT> class Graph {
 protected:
-  std::map<VertexID, VertexT> vertices;
+  std::map<VertexID, VertexT> vertices_;
 
 public:
   Graph() = default;
@@ -19,28 +19,30 @@ public:
   virtual bool hasEdge(VertexID from, VertexID to) const = 0;
   virtual std::size_t getVertexCount() const = 0;
   virtual std::size_t getEdgeCount() const = 0;
+  virtual std::vector<VertexID> getNeighbors(VertexID id) const = 0;
+  virtual void bfs(VertexID) = 0;
 
   void setVertexValue(VertexID id, const VertexT &value) {
     if (!hasVertex(id))
       throw std::invalid_argument("Cannot set value for non-existent vertex");
-    vertices[id] = value;
+    vertices_[id] = value;
   }
 
   VertexT getVertexValue(VertexID id) const {
-    auto it = vertices.find(id);
-    if (it == vertices.end())
+    auto it = vertices_.find(id);
+    if (it == vertices_.end())
       throw std::out_of_range("Vertex ID not found");
     return it->second;
   }
 
   bool hasVertex(VertexID id) const {
-    return vertices.find(id) != vertices.end();
+    return vertices_.find(id) != vertices_.end();
   }
 
   std::vector<VertexID> getVertices() const {
     std::vector<VertexID> result;
-    result.reserve(vertices.size());
-    for (const auto &[id, _] : vertices) {
+    result.reserve(vertices_.size());
+    for (const auto &[id, _] : vertices_) {
       result.push_back(id);
     }
     return result;
