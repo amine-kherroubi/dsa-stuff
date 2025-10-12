@@ -9,7 +9,7 @@ protected:
 public:
   Graph() = default;
   virtual ~Graph() = default;
-  
+
   virtual void addVertex(VertexID) = 0;
   virtual void addEdge(const VertexID, const VertexID) = 0;
   virtual void removeVertex(VertexID) = 0;
@@ -18,13 +18,16 @@ public:
   virtual int getVertexCount() const = 0;
   virtual int getEdgeCount() const = 0;
 
-  void setVertexValue(VertexID id, int value) { vertices[id] = value; }
+  void setVertexValue(VertexID id, int value) {
+    if (!hasVertex(id))
+      throw std::invalid_argument("Cannot set value for non-existent vertex");
+    vertices[id] = value;
+  }
 
   int getVertexValue(VertexID id) const {
     auto it = vertices.find(id);
-    if (it == vertices.end()) {
-      throw std::out_of_range("Vertex ID not found in graph");
-    }
+    if (it == vertices.end())
+      throw std::out_of_range("Vertex ID not found");
     return it->second;
   }
 

@@ -9,7 +9,12 @@ public:
   AdjListDUG() = default;
   ~AdjListDUG() override = default;
 
-  void addVertex(VertexID id) override { adjList[id] = {}; }
+  void addVertex(VertexID id) override {
+    if (adjList.find(id) == adjList.end()) {
+      adjList[id] = {};
+      vertices[id] = 0;
+    }
+  }
 
   void addEdge(VertexID from, VertexID to) override {
     adjList[from].push_back(to);
