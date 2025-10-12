@@ -82,5 +82,9 @@ public:
     return it->second;
   }
 
-  void bfs(VertexID start) const override { AdjList<VertexID>::bfs(start); }
+  void bfs(VertexID root_id,
+           std::function<void(std::optional<VertexID>)> callback =
+               nullptr) const override {
+    AdjList<VertexID>::bfs(root_id, callback);
+  }
 };

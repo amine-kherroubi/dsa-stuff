@@ -101,7 +101,9 @@ public:
     return it->second;
   }
 
-  void bfs(VertexID start) const override {
-    AdjList<std::pair<VertexID, WeightT>>::bfs(start);
+  void bfs(VertexID root_id,
+           std::function<void(std::optional<VertexID>)> callback =
+               nullptr) const override {
+    AdjList<std::pair<VertexID, WeightT>>::bfs(root_id, callback);
   }
 };

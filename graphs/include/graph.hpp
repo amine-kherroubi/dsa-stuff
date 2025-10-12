@@ -1,7 +1,9 @@
 #pragma once
-
 #include "types.hpp"
+#include <cstddef>
+#include <functional>
 #include <map>
+#include <optional>
 #include <queue>
 #include <stdexcept>
 #include <vector>
@@ -13,14 +15,15 @@ protected:
 public:
   Graph() = default;
   virtual ~Graph() = default;
-
   virtual void addVertex(VertexID id, const VertexT &value = VertexT{}) = 0;
   virtual void removeVertex(VertexID id) = 0;
   virtual void removeEdge(VertexID from, VertexID to) = 0;
   virtual bool hasEdge(VertexID from, VertexID to) const = 0;
   virtual std::size_t getVertexCount() const = 0;
   virtual std::size_t getEdgeCount() const = 0;
-  virtual void bfs(VertexID start) const = 0;
+  virtual void bfs(VertexID root_id,
+                   std::function<void(std::optional<VertexID>)> callback =
+                       nullptr) const = 0;
 
   void setVertexValue(VertexID id, const VertexT &value) {
     if (!hasVertex(id))
@@ -54,7 +57,6 @@ class DirectedWeightedGraph : public Graph<VertexT> {
 public:
   DirectedWeightedGraph() = default;
   virtual ~DirectedWeightedGraph() = default;
-
   virtual void addEdge(VertexID from, VertexID to, WeightT weight) = 0;
   virtual WeightT getEdgeWeight(VertexID from, VertexID to) const = 0;
 };
@@ -64,7 +66,6 @@ class DirectedUnweightedGraph : public Graph<VertexT> {
 public:
   DirectedUnweightedGraph() = default;
   virtual ~DirectedUnweightedGraph() = default;
-
   virtual void addEdge(VertexID from, VertexID to) = 0;
 };
 
@@ -73,7 +74,6 @@ class UndirectedWeightedGraph : public Graph<VertexT> {
 public:
   UndirectedWeightedGraph() = default;
   virtual ~UndirectedWeightedGraph() = default;
-
   virtual void addEdge(VertexID from, VertexID to, WeightT weight) = 0;
   virtual WeightT getEdgeWeight(VertexID from, VertexID to) const = 0;
 };
@@ -83,7 +83,6 @@ class UndirectedUnweightedGraph : public Graph<VertexT> {
 public:
   UndirectedUnweightedGraph() = default;
   virtual ~UndirectedUnweightedGraph() = default;
-
   virtual void addEdge(VertexID from, VertexID to) = 0;
 };
 
@@ -102,8 +101,9 @@ private:
 
 public:
   virtual std::vector<AdjListElement> getNeighbors(VertexID id) const = 0;
-
-  void bfs(VertexID root_id) const {
+  void
+  bfs(VertexID root_id,
+      std::function<void(std::optional<VertexID>)> callback = nullptr) const {
     std::map<VertexID, VisitingState> visiting_state{};
     for (const auto &[vertex_id, _] : adj_list_) {
       visiting_state[vertex_id] = VisitingState::Undiscovered;
@@ -117,10 +117,13 @@ public:
       VertexID current_vertex_id = visiting_queue.front();
       visiting_queue.pop();
 
+      if (callback) {
+        callback(std::optional<VertexID>(current_vertex_id));
+      }
+
       for (const AdjListElement &list_element :
            adj_list_.at(current_vertex_id)) {
         VertexID neighbor_id = extractVertexID(list_element);
-
         if (visiting_state[neighbor_id] == VisitingState::Undiscovered) {
           visiting_state[neighbor_id] = VisitingState::Discovered;
           visiting_queue.push(neighbor_id);
