@@ -20,8 +20,6 @@ public:
   virtual bool hasEdge(VertexID from, VertexID to) const = 0;
   virtual std::size_t getVertexCount() const = 0;
   virtual std::size_t getEdgeCount() const = 0;
-  virtual std::vector<VertexID> getNeighbors(VertexID id) const = 0;
-  virtual void bfs(VertexID) = 0;
 
   void setVertexValue(VertexID id, const VertexT &value) {
     if (!hasVertex(id))
@@ -92,7 +90,18 @@ template <typename AdjListElement> class AdjList {
 protected:
   std::map<VertexID, std::vector<AdjListElement>> adj_list_;
 
+private:
+  static constexpr VertexID extractVertexID(const AdjListElement &element) {
+    if constexpr (std::is_same_v<AdjListElement, VertexID>) {
+      return element;
+    } else {
+      return element.first;
+    }
+  }
+
 public:
+  virtual std::vector<AdjListElement> getNeighbors(VertexID id) const = 0;
+
   void bfs(VertexID root_id) const {
     std::map<VertexID, VisitingState> visiting_state{};
     for (const auto [vertex_id, _] : adj_list_) {
@@ -107,7 +116,10 @@ public:
       VertexID current_vertex_id = visiting_queue.front();
       visiting_queue.pop();
 
-      for (const VertexID neighbor_id : adj_list_[current_vertex_id]) {
+      for (const AdjListElement &list_element :
+           adj_list_.at(current_vertex_id)) {
+        VertexID neighbor_id = extractVertexID(list_element);
+
         if (visiting_state[neighbor_id] == VisitingState::Undiscoverd) {
           visiting_state[neighbor_id] = VisitingState::Discovered;
           visiting_queue.push(neighbor_id);
