@@ -37,11 +37,10 @@ public:
     this->vertices_.erase(id);
 
     for (auto &[_, neighbors] : this->adj_list_) {
-      neighbors.erase(std::remove_if(neighbors.begin(), neighbors.end(),
-                                     [id](const auto &pair) {
-                                       return pair.first == id;
-                                     }), // FIXED
-                      neighbors.end());
+      neighbors.erase(
+          std::remove_if(neighbors.begin(), neighbors.end(),
+                         [id](const auto &pair) { return pair.first == id; }),
+          neighbors.end());
     }
   }
 
@@ -94,10 +93,15 @@ public:
     return count;
   }
 
-  std::vector<std::pair<VertexID, WeightT>> getNeighbors(VertexID id) const {
+  std::vector<std::pair<VertexID, WeightT>>
+  getNeighbors(VertexID id) const override {
     auto it = this->adj_list_.find(id);
     if (it == this->adj_list_.end())
       return {};
     return it->second;
+  }
+
+  void bfs(VertexID start) const override {
+    AdjList<std::pair<VertexID, WeightT>>::bfs(start);
   }
 };

@@ -75,10 +75,12 @@ public:
     return count / 2;
   }
 
-  std::vector<VertexID> getNeighbors(VertexID id) const {
+  std::vector<VertexID> getNeighbors(VertexID id) const override {
     auto it = this->adj_list_.find(id);
     if (it == this->adj_list_.end())
       return {};
     return it->second;
   }
+
+  void bfs(VertexID start) const override { AdjList<VertexID>::bfs(start); }
 };

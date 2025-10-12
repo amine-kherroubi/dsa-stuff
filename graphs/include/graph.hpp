@@ -20,6 +20,7 @@ public:
   virtual bool hasEdge(VertexID from, VertexID to) const = 0;
   virtual std::size_t getVertexCount() const = 0;
   virtual std::size_t getEdgeCount() const = 0;
+  virtual void bfs(VertexID start) const = 0;
 
   void setVertexValue(VertexID id, const VertexT &value) {
     if (!hasVertex(id))
@@ -104,8 +105,8 @@ public:
 
   void bfs(VertexID root_id) const {
     std::map<VertexID, VisitingState> visiting_state{};
-    for (const auto [vertex_id, _] : adj_list_) {
-      visiting_state[vertex_id] = VisitingState::Undiscoverd;
+    for (const auto &[vertex_id, _] : adj_list_) {
+      visiting_state[vertex_id] = VisitingState::Undiscovered;
     }
 
     std::queue<VertexID> visiting_queue;
@@ -120,7 +121,7 @@ public:
            adj_list_.at(current_vertex_id)) {
         VertexID neighbor_id = extractVertexID(list_element);
 
-        if (visiting_state[neighbor_id] == VisitingState::Undiscoverd) {
+        if (visiting_state[neighbor_id] == VisitingState::Undiscovered) {
           visiting_state[neighbor_id] = VisitingState::Discovered;
           visiting_queue.push(neighbor_id);
         }

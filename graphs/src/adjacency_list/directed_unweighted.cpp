@@ -75,4 +75,6 @@ public:
       return {};
     return it->second;
   }
+
+  void bfs(VertexID start) const override { AdjList<VertexID>::bfs(start); }
 };

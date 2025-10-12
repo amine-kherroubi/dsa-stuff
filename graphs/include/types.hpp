@@ -5,7 +5,7 @@
 using VertexID = std::size_t;
 
 enum class VisitingState {
-  Undiscoverd,
+  Undiscovered,
   Discovered,
   Processed,
 };
