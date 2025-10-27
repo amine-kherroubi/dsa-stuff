@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -42,6 +43,7 @@ int main() {
   std::vector<std::string> words = {"Hello", "City", "School", "Boy",
                                     "Girl",  "Car",  "Coffee"};
   sort_words(words);
-
-  return search_in_words(words, "Hello");
+  std::string word = "Hello";
+  std::cout << search_in_words(words, word);
+  return 0;
 }
