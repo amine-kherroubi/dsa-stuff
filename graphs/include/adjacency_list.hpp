@@ -1,9 +1,7 @@
 #pragma once
 
 #include "types.hpp"
-#include <functional>
 #include <map>
-#include <optional>
 #include <queue>
 #include <stack>
 
@@ -48,9 +46,7 @@ public:
     }
   }
 
-  void
-  dfs(VertexID root_id,
-      std::function<void(std::optional<VertexID>)> callback = nullptr) const {
+  void dfs(VertexID root_id) const {
     std::map<VertexID, VisitingState> visiting_state{};
     for (const auto &[vertex_id, _] : adj_list_) {
       visiting_state[vertex_id] = VisitingState::Undiscovered;
@@ -64,18 +60,12 @@ public:
       VertexID current_vertex_id = visiting_stack.top();
       visiting_stack.pop();
 
-      // Skip if already processed
       if (visiting_state[current_vertex_id] == VisitingState::Processed) {
         continue;
       }
 
-      if (callback) {
-        callback(std::optional<VertexID>(current_vertex_id));
-      }
-
       visiting_state[current_vertex_id] = VisitingState::Processed;
 
-      // Push neighbors in reverse order to maintain left-to-right traversal
       for (const AdjListElement &list_element :
            adj_list_.at(current_vertex_id)) {
         VertexID neighbor_id = extractVertexID(list_element);

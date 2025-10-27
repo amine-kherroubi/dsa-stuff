@@ -1,3 +1,4 @@
+#include "../../include/adjacency_list.hpp"
 #include "../../include/graph.hpp"
 #include <algorithm>
 
@@ -101,15 +102,11 @@ public:
     return it->second;
   }
 
-  void bfs(VertexID root_id,
-           std::function<void(std::optional<VertexID>)> callback =
-               nullptr) const override {
-    AdjList<std::pair<VertexID, WeightT>>::bfs(root_id, callback);
+  void bfs(VertexID root_id) const override {
+    AdjList<std::pair<VertexID, WeightT>>::bfs(root_id);
   }
 
-  void dfs(VertexID root_id,
-           std::function<void(std::optional<VertexID>)> callback =
-               nullptr) const override {
-    AdjList<std::pair<VertexID, WeightT>>::dfs(root_id, callback);
+  void dfs(VertexID root_id) const override {
+    AdjList<std::pair<VertexID, WeightT>>::dfs(root_id);
   }
 };

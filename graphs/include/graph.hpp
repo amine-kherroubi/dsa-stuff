@@ -2,10 +2,9 @@
 
 #include "types.hpp"
 #include <cstddef>
-#include <functional>
 #include <map>
-#include <optional>
 #include <stdexcept>
+#include <vector>
 
 template <typename VertexT> class Graph {
 protected:
@@ -20,12 +19,8 @@ public:
   virtual bool hasEdge(VertexID, VertexID) const = 0;
   virtual std::size_t getVertexCount() const = 0;
   virtual std::size_t getEdgeCount() const = 0;
-  virtual void bfs(VertexID root_id,
-                   std::function<void(std::optional<VertexID>)> callback =
-                       nullptr) const = 0;
-  virtual void dfs(VertexID root_id,
-                   std::function<void(std::optional<VertexID>)> callback =
-                       nullptr) const = 0;
+  virtual void bfs(VertexID root_id) const = 0;
+  virtual void dfs(VertexID root_id) const = 0;
 
   void setVertexValue(VertexID id, const VertexT &value) {
     if (!hasVertex(id))
