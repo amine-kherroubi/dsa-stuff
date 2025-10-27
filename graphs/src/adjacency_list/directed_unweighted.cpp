@@ -69,15 +69,4 @@ public:
     }
     return count;
   }
-
-  std::vector<VertexID> getNeighbors(VertexID id) const override {
-    auto it = this->adj_list_.find(id);
-    if (it == this->adj_list_.end())
-      return {};
-    return it->second;
-  }
-
-  void bfs(VertexID root_id) const override { AdjList<VertexID>::bfs(root_id); }
-
-  void dfs(VertexID root_id) const override { AdjList<VertexID>::dfs(root_id); }
 };

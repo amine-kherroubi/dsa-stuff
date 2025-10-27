@@ -19,8 +19,6 @@ public:
   virtual bool hasEdge(VertexID, VertexID) const = 0;
   virtual std::size_t getVertexCount() const = 0;
   virtual std::size_t getEdgeCount() const = 0;
-  virtual void bfs(VertexID root_id) const = 0;
-  virtual void dfs(VertexID root_id) const = 0;
 
   void setVertexValue(VertexID id, const VertexT &value) {
     if (!hasVertex(id))
@@ -49,36 +47,42 @@ public:
   }
 };
 
-template <typename VertexT, typename WeightT = int>
-class DirectedWeightedGraph : public Graph<VertexT> {
+template <typename VertexT> class UnWeightedGraph : public Graph<VertexT> {
 public:
-  DirectedWeightedGraph() = default;
-  virtual ~DirectedWeightedGraph() = default;
-  virtual void addEdge(VertexID, VertexID, WeightT) = 0;
-  virtual WeightT getEdgeWeight(VertexID, VertexID) const = 0;
-};
-
-template <typename VertexT>
-class DirectedUnweightedGraph : public Graph<VertexT> {
-public:
-  DirectedUnweightedGraph() = default;
-  virtual ~DirectedUnweightedGraph() = default;
   virtual void addEdge(VertexID, VertexID) = 0;
 };
 
-template <typename VertexT, typename WeightT = int>
-class UndirectedWeightedGraph : public Graph<VertexT> {
+template <typename VertexT, typename WeightT>
+class WeightedGraph : public Graph<VertexT> {
 public:
-  UndirectedWeightedGraph() = default;
-  virtual ~UndirectedWeightedGraph() = default;
   virtual void addEdge(VertexID, VertexID, WeightT) = 0;
   virtual WeightT getEdgeWeight(VertexID, VertexID) const = 0;
 };
 
 template <typename VertexT>
-class UndirectedUnweightedGraph : public Graph<VertexT> {
+class UndirectedUnweightedGraph : public UnWeightedGraph<VertexT> {
 public:
   UndirectedUnweightedGraph() = default;
   virtual ~UndirectedUnweightedGraph() = default;
-  virtual void addEdge(VertexID, VertexID) = 0;
+};
+
+template <typename VertexT>
+class DirectedUnweightedGraph : public UnWeightedGraph<VertexT> {
+public:
+  DirectedUnweightedGraph() = default;
+  virtual ~DirectedUnweightedGraph() = default;
+};
+
+template <typename VertexT, typename WeightT = int>
+class UndirectedWeightedGraph : public WeightedGraph<VertexT, WeightT> {
+public:
+  UndirectedWeightedGraph() = default;
+  virtual ~UndirectedWeightedGraph() = default;
+};
+
+template <typename VertexT, typename WeightT = int>
+class DirectedWeightedGraph : public WeightedGraph<VertexT, WeightT> {
+public:
+  DirectedWeightedGraph() = default;
+  virtual ~DirectedWeightedGraph() = default;
 };

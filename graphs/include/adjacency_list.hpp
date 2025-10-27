@@ -18,7 +18,12 @@ protected:
   }
 
 public:
-  virtual std::vector<AdjListElement> getNeighbors(VertexID) const = 0;
+  std::vector<VertexID> getNeighbors(VertexID id) const {
+    auto it = this->adj_list_.find(id);
+    if (it == this->adj_list_.end())
+      return {};
+    return it->second;
+  }
 
   void bfs(VertexID root_id) const {
     std::map<VertexID, VisitingState> visiting_state{};

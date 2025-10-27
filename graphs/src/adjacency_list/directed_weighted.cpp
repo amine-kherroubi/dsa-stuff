@@ -93,20 +93,4 @@ public:
     }
     return count;
   }
-
-  std::vector<std::pair<VertexID, WeightT>>
-  getNeighbors(VertexID id) const override {
-    auto it = this->adj_list_.find(id);
-    if (it == this->adj_list_.end())
-      return {};
-    return it->second;
-  }
-
-  void bfs(VertexID root_id) const override {
-    AdjList<std::pair<VertexID, WeightT>>::bfs(root_id);
-  }
-
-  void dfs(VertexID root_id) const override {
-    AdjList<std::pair<VertexID, WeightT>>::dfs(root_id);
-  }
 };
