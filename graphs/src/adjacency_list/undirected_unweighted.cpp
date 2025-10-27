@@ -1,5 +1,9 @@
+#include "../../include/adjacency_list.hpp"
 #include "../../include/graph.hpp"
-#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 template <typename VertexT>
 class AdjListUndirectedUnweightedGraph
@@ -92,5 +96,75 @@ public:
            std::function<void(std::optional<VertexID>)> callback =
                nullptr) const override {
     AdjList<VertexID>::dfs(root_id, callback);
+  }
+
+  std::vector<VertexID> shortestCycle() const {
+    std::size_t shortest_cycle_length = SIZE_MAX;
+    std::vector<VertexID> shortest_cycle_path;
+
+    for (const auto &[start_vertex, _] : adj_list_) {
+      std::map<VertexID, std::pair<VisitingState, std::size_t>>
+          visiting_information;
+      std::map<VertexID, VertexID> parent;
+
+      for (const auto &[vertex_id, _] : adj_list_) {
+        visiting_information[vertex_id] = {VisitingState::Undiscovered,
+                                           SIZE_MAX};
+      }
+
+      std::queue<VertexID> visiting_queue;
+      visiting_information[start_vertex] = {VisitingState::Discovered, 0};
+      parent[start_vertex] = start_vertex;
+      visiting_queue.push(start_vertex);
+
+      while (!visiting_queue.empty()) {
+        VertexID current_vertex_id = visiting_queue.front();
+        visiting_queue.pop();
+
+        for (const VertexID &neighbor_id : adj_list_.at(current_vertex_id)) {
+          if (visiting_information[neighbor_id].first ==
+              VisitingState::Undiscovered) {
+            visiting_information[neighbor_id] = {
+                VisitingState::Discovered,
+                visiting_information[current_vertex_id].second + 1};
+            parent[neighbor_id] = current_vertex_id;
+            visiting_queue.push(neighbor_id);
+
+          } else if (parent[current_vertex_id] != neighbor_id) {
+            std::size_t cycle_length =
+                visiting_information[current_vertex_id].second +
+                visiting_information[neighbor_id].second + 1;
+
+            if (cycle_length < shortest_cycle_length) {
+              shortest_cycle_length = cycle_length;
+
+              std::vector<VertexID> path1, path2;
+              VertexID v = current_vertex_id;
+              while (v != start_vertex) {
+                path1.push_back(v);
+                v = parent[v];
+              }
+              path1.push_back(start_vertex);
+
+              v = neighbor_id;
+              while (v != start_vertex) {
+                path2.push_back(v);
+                v = parent[v];
+              }
+
+              shortest_cycle_path.clear();
+              shortest_cycle_path.insert(shortest_cycle_path.end(),
+                                         path1.rbegin(), path1.rend());
+              shortest_cycle_path.insert(shortest_cycle_path.end(),
+                                         path2.begin(), path2.end());
+            }
+          }
+        }
+        visiting_information[current_vertex_id].first =
+            VisitingState::Processed;
+      }
+    }
+
+    return shortest_cycle_path;
   }
 };
