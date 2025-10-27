@@ -20,7 +20,7 @@ void sort_words(std::vector<std::string> &words) {
 
 int search_in_words(const std::vector<std::string> &words,
                     const std::string &word) {
-  if (!words.size())
+  if (words.size() == 0 || (words.size() == 1 && words[0] != word))
     return -1;
 
   std::size_t inf = 0, sup = words.size() - 1;
